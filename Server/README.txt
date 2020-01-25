@@ -1,0 +1,1 @@
+This folder will contain all information relating to the story database.

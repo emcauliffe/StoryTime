@@ -32,8 +32,8 @@ export default class LoadingScreen extends React.Component {
             if (value == null || value == "") {
                 this.props.navigation.dispatch(initialize)
             } else {
-                // this.props.navigation.dispatch(startNormal)
-                this.props.navigation.dispatch(initialize)
+                this.props.navigation.dispatch(startNormal)
+                // this.props.navigation.dispatch(initialize)
             }
         })
     }

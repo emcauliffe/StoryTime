@@ -70,10 +70,11 @@ export default class StoryScreen extends React.Component {
 
     getStory() {
         console.log(this.props.navigation.state.params-1)
+        let storyPick = Math.round(Math.random())
         let storyResult = {
-            title: stories[this.props.navigation.state.params-1][0].title,
-            author: stories[this.props.navigation.state.params-1][0].author,
-            story: stories[this.props.navigation.state.params-1][0].story,
+            title: stories[this.props.navigation.state.params-1][storyPick].Title,
+            author: stories[this.props.navigation.state.params-1][storyPick].Author,
+            story: stories[this.props.navigation.state.params-1][storyPick].Content,
         }
         return storyResult
     }

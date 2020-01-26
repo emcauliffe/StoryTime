@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     minuteSelectText: {
         fontSize:54,
         fontWeight:"bold", 
-        color:"white"
+        color:"white",
     },
     storyTitle: {
         fontSize:30,

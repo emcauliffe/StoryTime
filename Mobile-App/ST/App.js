@@ -15,92 +15,12 @@ import {
 import { styles } from './styles';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import StoryScreen from './Story';
-import {userData} from './UserData';
-
-
-// class HomeScreen extends React.Component {
-//   state = {
-//     ready: false,
-//     SlideUpValue: new Animated.Value(0),
-//     fadeValue: new Animated.Value(0)
-//   };
-
-//   _start = () => {
-//     return Animated.parallel([
-//       Animated.timing(this.state.SlideUpValue, {
-//         toValue: 1,
-//         duration: 500,
-//         useNativeDriver: true
-//       }),
-//       Animated.timing(this.state.fadeValue, {
-//         toValue: 1,
-//         duration: 500,
-//         useNativeDriver: true
-//       }),
-//     ]).start();
-//   };
-
-  
-//   render() {
-//     let { fadeValue, SlideUpValue } = this.state;
-//     return (
-//         <Animated.View
-//           style={{
-//             ...props.style,
-//             transform: [
-//               {
-//                 translateY: SlideUpValue.interpolate({
-//                   inputRange: [0, 1],
-//                   outputRange: [600, 0]
-//                 })
-//               }
-//             ],
-//             opacity: fadeValue,
-//           }}
-//         >
-//         </Animated.View>
-//     );
-//   }
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#FFF",
-//     alignItems: "center"
-//   },
-//   item: {},
-//   btn: {
-//     backgroundColor: "#480032",
-//     width: 100,
-//     height: 40,
-//     padding: 3,
-//     justifyContent: "center",
-//     borderRadius: 6,
-//     marginTop: 29
-//   },
-//   text: {
-//     fontSize: 20,
-//     color: "#fff",
-//     fontWeight: "bold",
-//     textAlign: "center"
-//   },
-//   item1: {
-//     backgroundColor: "red",
-//     padding: 20,
-//     width: 100,
-//     margin: 10
-//   },
-
-//   textBtn: {
-//     color: "#f4f4f4",
-//     fontWeight: "bold",
-//     textAlign: "center"
-//   }
-// });
-
+import InitScreen from './Init';
+import LoadingScreen from './Loading'
+import ReadingTestScreen from './ReadingTest';
 
 class HomeScreen extends React.Component {
 
@@ -133,11 +53,13 @@ class HomeScreen extends React.Component {
   
   componentDidMount() {
     this.start()
+    AsyncStorage.getItem('@name')
+    .then(value => this.setState({name: value}))
   }
 
   static navigationOptions = {
     title: '',
-    headerShown: false, 
+    headerShown: false,
   };
 
   render() {
@@ -170,9 +92,11 @@ class HomeScreen extends React.Component {
                 style={{
                   textAlign:"center",
                   fontWeight:"bold",
-                  fontSize: 54,
+                  fontSize: 50,
+                  // flexWrap:"wrap"
                   }}
-                >Hey {userData.name}. Got a few minutes?
+                  adjustsFontSizeToFit={true}
+                >Hey {this.state.name}. Got a few minutes?
               </Text>
             </Animated.View>
             <View style={{flex:3, flexDirection:"column", margin:1}}>
@@ -227,9 +151,12 @@ const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
     Story: StoryScreen,
+    Setup: InitScreen,
+    Loading: LoadingScreen,
+    ReadingTest: ReadingTestScreen
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: "Loading",
   }
 );
 

@@ -2,11 +2,11 @@ import { StyleSheet, Dimensions } from 'react-native';
 
 export const styles = StyleSheet.create({
     minuteSelect: {
-        backgroundColor: "#007322",
+        backgroundColor: "#e24856", //007322 //e24856
         flex:1,
         alignItems:"center",
         justifyContent:"center",
-        margin:1,
+        margin:7,
         borderRadius:15,
     },
     minuteSelectText: {
@@ -30,5 +30,9 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         textAlign: "center",
         fontStyle:"italic",
+    },
+    storyBackground: {
+        flex: 1,
+        backgroundColor: "#F5F4E4"
     }
 });

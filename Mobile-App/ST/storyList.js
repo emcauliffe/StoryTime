@@ -1,8 +1,9 @@
 export const stories = [
-    {
-        title: "ESCAPE",
-        author: "Elinor Wylie",
-        story: `When foxes eat the last gold grape,
+    [
+        {
+            title: "ESCAPE",
+            author: "Elinor Wylie",
+            story: `When foxes eat the last gold grape,
 And the last white antelope is killed,
 I shall stop fighting and escape
 Into a little house I'll build.
@@ -17,16 +18,20 @@ In hollows under the mangrove root,
 Or where, in apple-scented rain,
 The silver wasp-nests hang like fruit
 `,
-        words: 78,
-        genre: "Fiction",
+            words: 78,
+            genre: "Fiction",
 
-    },
-    {
-        title: "",
-        author: "",
-        story: ``,
-        words: 0,
-        genre: "",
+        },
+        {
+            title: "",
+            author: "",
+            story: ``,
+            words: 0,
+            genre: "",
+        },
+    ],[
 
-    },
+    ],[
+
+    ]
 ];

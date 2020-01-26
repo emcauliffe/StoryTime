@@ -1,6 +1,7 @@
 export let userData = {
-    name: "Ethan",
+    name: "",
     readingSpeed: 200,
     genres: ["ficiton", "non-fiction"],
+    startup: "Setup",
     
 }

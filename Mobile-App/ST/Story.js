@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { styles } from './styles';
+import { stories } from './storyList'
 
 export default class StoryScreen extends React.Component {
 
@@ -32,39 +33,21 @@ export default class StoryScreen extends React.Component {
     };
 
     componentDidMount() {
+        // console.log(this.props.navigation.state.params)
+        // this.props.navigation.state.params
+        // console.log(stories)
         this.setState(this.getStory());
     }
 
-    getStory() {
-        var storyObject = {
-            title: "The Road Not Taken",
-            author: "Robert Frost",
-            story: `Two roads diverged in a yellow wood,
-And sorry I could not travel both
-And be one traveler, long I stood
-And looked down one as far as I could
-To where it bent in the undergrowth;
-            
-Then took the other, as just as fair,
-And having perhaps the better claim,
-Because it was grassy and wanted wear;
-Though as for that the passing there
-Had worn them really about the same,
-            
-And both that morning equally lay
-In leaves no step had trodden black.
-Oh, I kept the first for another day!
-Yet knowing how way leads on to way,
-I doubted if I should ever come back.
-            
-I shall be telling this with a sigh
-Somewhere ages and ages hence:
-Two roads diverged in a wood, and I—
-I took the one less traveled by,
-And that has made all the difference.`
-        }
-
-        return storyObject;
+    getStory(length) {
+        
+        return (
+            {
+                title: stories[0].title,
+                author: stories[0].author,
+                story: stories[0].story,
+            }
+        );
     }
 
 
@@ -80,6 +63,14 @@ And that has made all the difference.`
                         <Text style={styles.storyTitle}>{this.state.title}</Text>
                         <Text style={styles.storyText}>{this.state.story}</Text>
                         <Text style={styles.storyAuthor}>By: {this.state.author}</Text>
+                        <View style={{flexDirection:"row", alignContent: "center", justifyContent:"space-around"}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Home")}>
+                                <Text style={{fontSize:40}}>👍</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Home")}>
+                                <Text style={{fontSize:40}}>👎</Text>
+                            </TouchableOpacity>
+                        </View>
                     </ScrollView>
                     
                 </SafeAreaView>

@@ -1,15 +1,8 @@
 import mysql.connector
+import random
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 # app.config["DEBUG"] = True
-
-config = {
-  'user': 'root',
-  'password': '',
-  'host': '127.0.0.1',
-  'database': 'storytime',
-  'raise_on_warnings': True
-}
 
 @app.route("/")
 def hello():
@@ -20,13 +13,28 @@ def test():
 
     return jsonify([request.form, request.args])
 
+@app.route("/requestStory", methods=['GET', 'POST'])
+def newStory():
+    config = {
+        'user': 'storytimeuser',
+        'password': '',
+        'host': '127.0.0.1',
+        'database': 'storytime',
+        'raise_on_warnings': True
+    }
 
-@app.route("/sqlTest", methods=['GET','POST'])
-def access():
+    maxWords = 0
+    minWords = 0
+
     if "password" in request.form:
         config["password"] = request.form["password"]
     else:
         return "password not present"
+
+    if "maxWords" in request.args:
+        maxWords = request.args["maxWords"]
+    else:
+        return "no max words"
 
     try:
         cnx = mysql.connector.connect(**config)
@@ -41,12 +49,16 @@ def access():
 
         cursor = cnx.cursor()
 
-        cursor.execute("SELECT * FROM stories")
+        cursor.execute("SELECT * FROM stories WHERE words BETWEEN %s AND %s", (minWords, maxWords))
 
         data = cursor.fetchall()
         cnx.close()
 
-        return jsonify(data)
+        randomArticle = random.randint(0, len(data)-1)
+
+        return jsonify(data[randomArticle])
+
+
 
 if __name__ == "__main__":
     app.run()

@@ -6,7 +6,6 @@ import {
   View,
   Text,
   StatusBar,
-  TextInput,
   Button,
   TouchableOpacity,
 } from 'react-native';
@@ -19,13 +18,13 @@ export default class StoryScreen extends React.Component {
         super(props);
 
         this.state = {
-            minutes: 0,
             title: "",
             author: "",
-            story: "",
+            content: "",
         }
 
         this.getStory = this.getStory.bind(this);
+        this.likeOrDislike = this.likeOrDislike.bind(this);
     }
 
     static navigationOptions = {
@@ -39,24 +38,30 @@ export default class StoryScreen extends React.Component {
         .then( result => {
             let readingSpeed = parseInt(result)
 
+            let minWords
+            if (this.props.navigation.state.params === 1) {
+                minWords = (parseInt(this.props.navigation.state.params)-1)*readingSpeed
+            } else {
+                minWords = (parseInt(this.props.navigation.state.params)-0.5)*readingSpeed
+            }
+            
+            let maxWords = (parseInt(this.props.navigation.state.params)+0.5)*readingSpeed
 
-            let minWords = (parseInt(this.props.navigation.state.params)-1)*readingSpeed
-            let maxWords = parseInt(this.props.navigation.state.params)*readingSpeed
-
-            console.log(minWords + ", " + maxWords)
-
-            this.getStory(minWords, maxWords)
+            AsyncStorage.getItem('@mySQLpassword')
+            .then( result => {
+                this.getStory(minWords, maxWords, result)
+            })
 
         })
     }
 
-    getStory(minWords, maxWords) {
+    getStory(minWords, maxWords, password) {
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "multipart/form-data; boundary=--------------------------513459024693276879796331");
         
         var formdata = new FormData();
-        formdata.append("password", "");//INSERT PASSWORD
+        formdata.append("password", password);//INSERT PASSWORD
         
         var requestOptions = {
           method: 'POST',
@@ -65,18 +70,46 @@ export default class StoryScreen extends React.Component {
           redirect: 'follow'
         };
 
-        fetch(`https://storytimeapi.emcauliffe.ca/requestStory?minWords=${minWords}&maxWords=${maxWords}`, requestOptions)
+        fetch(`https://storytimeapi.emcauliffe.ca/stories/request?minWords=${minWords}&maxWords=${maxWords}`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 this.setState({
                     title: result[0],
                     author: result[1],
-                    story: result[4],
-
+                    content: result[2],
+                    id: result[3]
                 })
             })
             .catch(error => console.log('error', error));
 
+    }
+
+    likeOrDislike(reaction) {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "multipart/form-data; boundary=--------------------------513459024693276879796331");
+        
+        var formdata = new FormData();
+        
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: formdata,
+          redirect: 'follow'
+        };
+
+        let reactionValue
+
+        if (reaction === "like") {
+            reactionValue = 1
+        } else if (reaction === "dislike") [
+            reactionValue = -1
+        ]
+
+        AsyncStorage.getItem('@mySQLpassword')
+        .then( result => {
+            formdata.append("password", result);
+            fetch(`https://storytimeapi.emcauliffe.ca/stories/react?id_code=${this.state.id}&like=${reactionValue}`, requestOptions)
+        })
     }
 
 
@@ -90,13 +123,26 @@ export default class StoryScreen extends React.Component {
                 <SafeAreaView style={styles.storyBackground}>
                     <ScrollView>
                         <Text style={styles.storyTitle}>{this.state.title}</Text>
-                        <Text style={styles.storyText}>{this.state.story}</Text>
+                        <Text style={styles.storyText}>{this.state.content}</Text>
                         <Text style={styles.storyAuthor}>By: {this.state.author}</Text>
                         <View style={{flexDirection:"row", alignContent: "center", justifyContent:"space-around"}}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Home")}>
+                            <TouchableOpacity onPress={() => {
+                                    this.likeOrDislike("like")
+                                    this.props.navigation.navigate("Home")
+                                }}
+                            >
                                 <Text style={{fontSize:40}}>👍</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Home")}>
+                            <Button
+                                title="Done"
+                                onPress={() => this.props.navigation.navigate("Home")}    
+                            />
+                            <TouchableOpacity 
+                                onPress={() => {
+                                    this.likeOrDislike("dislike")
+                                    this.props.navigation.navigate("Home")
+                                }}
+                            >
                                 <Text style={{fontSize:40}}>👎</Text>
                             </TouchableOpacity>
                         </View>

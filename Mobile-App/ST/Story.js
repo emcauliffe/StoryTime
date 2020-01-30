@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { styles } from './styles';
-import { stories } from './storyList'
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class StoryScreen extends React.Component {
 
@@ -34,49 +34,49 @@ export default class StoryScreen extends React.Component {
     };
 
     componentDidMount() {
-        try {
-            fetch( //pulls the selected store info from the api
-            constants.API_ENDPOINT + '/store/businessinfo?store_ids=["' + this.props.navigation.state.params.store_id + '"]',
-            {
-                method: "GET",
-                headers: {
-                "Content-Type": "application/json",
-                apikey: constants.API_KEY,
-                entity_api_key: constants.EAPIK
-                }
-            }
-            )
-            .then(response => {
-                return response.json();
-            })
-            .then(result => {
-                if (!RNLocalize.uses24HourClock()) {
-                for (let i in result.data.stores[0].open_hours) {
-                    result.data.stores[0].open_hours[i].time.start = this.convert24h(
-                    result.data.stores[0].open_hours[i].time.start
-                    );
-                    result.data.stores[0].open_hours[i].time.end = this.convert24h(
-                    result.data.stores[0].open_hours[i].time.end
-                    );
-                }
-                }
-        
-                this.setState(result.data.stores[0]);
-            });
-        } catch {
-            this.setState(this.getStory())
-        }
+
+        AsyncStorage.getItem('@readTime')
+        .then( result => {
+            let readingSpeed = parseInt(result)
+
+
+            let minWords = (parseInt(this.props.navigation.state.params)-1)*readingSpeed
+            let maxWords = parseInt(this.props.navigation.state.params)*readingSpeed
+
+            console.log(minWords + ", " + maxWords)
+
+            this.getStory(minWords, maxWords)
+
+        })
     }
 
-    getStory() {
-        console.log(this.props.navigation.state.params-1)
-        let storyPick = Math.round(Math.random())
-        let storyResult = {
-            title: stories[this.props.navigation.state.params-1][storyPick].Title,
-            author: stories[this.props.navigation.state.params-1][storyPick].Author,
-            story: stories[this.props.navigation.state.params-1][storyPick].Content,
-        }
-        return storyResult
+    getStory(minWords, maxWords) {
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "multipart/form-data; boundary=--------------------------513459024693276879796331");
+        
+        var formdata = new FormData();
+        formdata.append("password", "");//INSERT PASSWORD
+        
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: formdata,
+          redirect: 'follow'
+        };
+
+        fetch(`https://storytimeapi.emcauliffe.ca/requestStory?minWords=${minWords}&maxWords=${maxWords}`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                this.setState({
+                    title: result[0],
+                    author: result[1],
+                    story: result[4],
+
+                })
+            })
+            .catch(error => console.log('error', error));
+
     }
 
 

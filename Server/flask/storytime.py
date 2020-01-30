@@ -36,6 +36,11 @@ def newStory():
     else:
         return "no max words"
 
+    if "minWords" in request.args:
+        minWords = request.args["minWords"]
+    else:
+        return "no min words"
+
     try:
         cnx = mysql.connector.connect(**config)
     except mysql.connector.Error as err:

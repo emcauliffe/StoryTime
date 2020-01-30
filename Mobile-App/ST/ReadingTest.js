@@ -46,7 +46,11 @@ export default class ReadingTestScreen extends React.Component {
         
         // time = Date.now() - time
 
-        this.setState({time: Date.now() - this.state.time}, () => AsyncStorage.setItem('@readTime',(this.state.time/1000).toString()))
+        this.setState({time: Date.now() - this.state.time}, 
+        () => {
+            // console.log(187/(this.state.time/60000))//187
+            AsyncStorage.setItem('@readTime',(187/(this.state.time/60000)).toString())
+        });
 
         this.props.navigation.dispatch(goHome)
 

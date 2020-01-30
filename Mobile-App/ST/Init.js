@@ -31,6 +31,7 @@ export default class InitScreen extends React.Component {
 
         this.state = {
             name: "",
+            mySQLpassword: "",
         }
     }
 
@@ -53,15 +54,44 @@ export default class InitScreen extends React.Component {
                             justifyContent:"flex-start", 
                             alignContent:"center",
                         }}
+                        // onSubmitEditing={
+                        //     () => {
+                        //         if (this.state.name.charAt(this.state.name.length-1) === " ") {
+                        //             AsyncStorage.setItem('@name', this.state.name.substring(0, this.state.name.length-1)).then(this.props.navigation.dispatch(readingTest))
+                        //         } else {
+                        //             AsyncStorage.setItem('@name', this.state.name).then(this.props.navigation.dispatch(readingTest))
+                        //         }
+                        //     }}
+                        returnKeyType="next"
+                    />
+                    <Text style={{fontSize:40, textAlign:"center", fontWeight:"bold", margin:10}}>Please input password.</Text>
+                    <TextInput
+                        onChangeText={text => this.setState({mySQLpassword:text})}
+                        placeholder="mySQL database password"
+                        placeholderTextColor="grey"
+                        autoCompleteType="password"
+                        secureTextEntry={true}
+                        style={{
+                            margin:10,
+                            fontSize: 35, 
+                            color:"black", 
+                            textAlign:"left", 
+                            justifyContent:"flex-start", 
+                            alignContent:"center",
+                        }}
                         onSubmitEditing={
                             () => {
                                 if (this.state.name.charAt(this.state.name.length-1) === " ") {
-                                    AsyncStorage.setItem('@name', this.state.name.substring(0, this.state.name.length-1)).then(this.props.navigation.dispatch(readingTest))
+                                    AsyncStorage.setItem('@mySQLpassword', this.state.mySQLpassword)
+                                    .then(AsyncStorage.setItem('@name', this.state.name.substring(0, this.state.name.length-1)))
+                                    .then(this.props.navigation.dispatch(readingTest))
                                 } else {
-                                    AsyncStorage.setItem('@name', this.state.name).then(this.props.navigation.dispatch(readingTest))
+                                    AsyncStorage.setItem('@mySQLpassword', this.state.mySQLpassword)
+                                    .then(AsyncStorage.setItem('@name', this.state.name))
+                                    .then(this.props.navigation.dispatch(readingTest))
                                 }
                             }}
-                        returnKeyType="done"
+                        returnKeyType="next"
                     />
 
                 </SafeAreaView>

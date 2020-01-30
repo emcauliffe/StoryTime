@@ -6,6 +6,7 @@ import {
   TextInput,
   ScrollView,
   Button,
+  Alert
 } from 'react-native';
 
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -46,14 +47,18 @@ export default class ReadingTestScreen extends React.Component {
         
         // time = Date.now() - time
 
-        this.setState({time: Date.now() - this.state.time}, 
-        () => {
-            // console.log(187/(this.state.time/60000))//187
-            AsyncStorage.setItem('@readTime',(187/(this.state.time/60000)).toString())
-        });
+        if (this.state.time === 0) {
+            Alert("Please make sure to start the test using the button at the top of the page.")
+        } else {
 
-        this.props.navigation.dispatch(goHome)
+            this.setState({time: Date.now() - this.state.time}, 
+            () => {
+                // console.log(187/(this.state.time/60000))//187
+                AsyncStorage.setItem('@readTime',(187/(this.state.time/60000)).toString())
+            });
 
+            this.props.navigation.dispatch(goHome)
+        }
     }
 
 

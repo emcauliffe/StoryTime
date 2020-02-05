@@ -1,30 +1,51 @@
 import mysql.connector
 import random
-from flask import Flask, request, jsonify
+import os
+
+from flask import Flask, request, jsonify, session
+from mysql.connector import errorcode
+
 app = Flask(__name__)
-app.config["DEBUG"] = True
+# app.config["DEBUG"] = True
+
+sqlPassword = ""
+config = {
+    'user': 'storytimeuser',
+    'password': '',
+    'host': '127.0.0.1',
+    'database': 'storytime',
+    'raise_on_warnings': True
+}
+app.secret_key = os.urandom(16)
 
 @app.route("/")
 def hello():
     return "<h1 style='color:blue'>StoryTime API</h1>"
 
-@app.route("/stories/request", methods=['POST'])
-def newStory():
-    config = {
-        'user': 'storytimeuser',
-        'password': '',
-        'host': '127.0.0.1',
-        'database': 'storytime',
-        'raise_on_warnings': True
-    }
+@app.route("/login", methods=["POST"])
+def loginToDatabase():
+    
+    if "password" in request.form:
+        session["password"] = request.form["password"]
+        return "logged in"
+    else:
+        return "password not present"
 
+@app.route("/logout")
+def logout():
+    session.pop("password", None)
+    return "logged out."
+
+@app.route("/stories/request", methods=['GET'])
+def newStory():
+    
     maxWords = 0
     minWords = 0
 
-    if "password" in request.form:
-        config["password"] = request.form["password"]
+    if "password" in session:
+        config["password"] = session["password"]
     else:
-        return "password not present"
+        return "No sql database password provided"
 
     if "maxWords" in request.args:
         maxWords = request.args["maxWords"]
@@ -61,21 +82,13 @@ def newStory():
 @app.route("/stories/react", methods=['POST'])
 def likeOrDislike():
 
-    config = {
-        'user': 'storytimeuser',
-        'password': '',
-        'host': '127.0.0.1',
-        'database': 'storytime',
-        'raise_on_warnings': True
-    }
-
     id_code = None
     like = None
 
-    if "password" in request.form:
-        config["password"] = request.form["password"]
+    if "password" in session:
+        config["password"] = session["password"]
     else:
-        return "password not present"
+        return "No sql database password provided"
 
     if "id_code" in request.args:
         id_code = request.args["id_code"]
@@ -116,12 +129,34 @@ def likeOrDislike():
         cnx.close()
 
         return jsonify(numberOfLikes)
-        # return "aaa"
 
-@app.route('/stories/<int:post_id>', methods=['POST'])
-def show_post(post_id):
-    # show the post with the given id, the id is an integer
-    return 'Post %d' % post_id
+@app.route('/stories/<int:id_code>', methods=['POST', 'GET'])
+def show_post(id_code):
+
+    if "password" in session:
+        config["password"] = session["password"]
+    else:
+        return "No sql database password provided"
+
+    try:
+        cnx = mysql.connector.connect(**config)
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            return "Something is wrong with your user name or password"
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            return "Database does not exist"
+        else:
+            return err
+    else:
+        cursor = cnx.cursor()
+        cursor.execute("SELECT title, author, content FROM stories WHERE id_code=%s", (id_code,))
+
+        data = cursor.fetchall()[0]
+
+        cursor.close()
+        cnx.close()
+
+        return jsonify(data)
 
 if __name__ == "__main__":
     app.run()

@@ -47,32 +47,21 @@ export default class StoryScreen extends React.Component {
             
             let maxWords = (parseInt(this.props.navigation.state.params)+0.5)*readingSpeed
 
-            AsyncStorage.getItem('@mySQLpassword')
-            .then( result => {
-                this.getStory(minWords, maxWords, result)
-            })
-
+            this.getStory(minWords, maxWords)
         })
     }
 
-    getStory(minWords, maxWords, password) {
+    getStory(minWords, maxWords) {
 
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "multipart/form-data; boundary=--------------------------513459024693276879796331");
-        
-        var formdata = new FormData();
-        formdata.append("password", password);//INSERT PASSWORD
-        
         var requestOptions = {
-          method: 'POST',
-          headers: myHeaders,
-          body: formdata,
+          method: 'GET',
           redirect: 'follow'
         };
 
         fetch(`https://storytimeapi.emcauliffe.ca/stories/request?minWords=${minWords}&maxWords=${maxWords}`, requestOptions)
             .then(response => response.json())
             .then(result => {
+                console.log(result)
                 this.setState({
                     title: result[0],
                     author: result[1],
@@ -101,15 +90,11 @@ export default class StoryScreen extends React.Component {
 
         if (reaction === "like") {
             reactionValue = 1
-        } else if (reaction === "dislike") [
+        } else if (reaction === "dislike") {
             reactionValue = -1
-        ]
+        }
 
-        AsyncStorage.getItem('@mySQLpassword')
-        .then( result => {
-            formdata.append("password", result);
-            fetch(`https://storytimeapi.emcauliffe.ca/stories/react?id_code=${this.state.id}&like=${reactionValue}`, requestOptions)
-        })
+        fetch(`https://storytimeapi.emcauliffe.ca/stories/react?id_code=${this.state.id}&like=${reactionValue}`, requestOptions)
     }
 
 

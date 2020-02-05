@@ -34,6 +34,7 @@ class HomeScreen extends React.Component {
     };
 
     this.start = this.start.bind(this)
+    this.login = this.login.bind(this)
   }
 
   start = () => {
@@ -55,12 +56,37 @@ class HomeScreen extends React.Component {
     this.start()
     AsyncStorage.getItem('@name')
     .then(value => this.setState({name: value}))
+    this.login()
   }
 
   static navigationOptions = {
     title: '',
     headerShown: false,
   };
+
+  login() {
+
+    AsyncStorage.getItem('@mySQLpassword')
+    .then( password => {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "multipart/form-data; boundary=--------------------------901122788479602152541640");
+      
+      var formdata = new FormData();
+      formdata.append("password", password);
+      
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow'
+      };
+  
+      fetch("https://storytimeapi.emcauliffe.ca/login", requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+    })
+  }
 
   render() {
     let { fadeValue, SlideUpValue } = this.state;

@@ -59,18 +59,18 @@ export default class StoryScreen extends React.Component {
           redirect: 'follow'
         };
 
-        fetch(`https://storytimeapi.emcauliffe.ca/stories/request?minWords=${minWords}&maxWords=${maxWords}`, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                console.log(result)
-                this.setState({
-                    title: result[0],
-                    author: result[1],
-                    content: result[2],
-                    id: result[3]
-                })
-            })
-            .catch(error => {
+        // fetch(`https://storytimeapi.emcauliffe.ca/stories/request?minWords=${minWords}&maxWords=${maxWords}`, requestOptions)
+        //     .then(response => response.json())
+        //     .then(result => {
+        //         console.log(result)
+        //         this.setState({
+        //             title: result[0],
+        //             author: result[1],
+        //             content: result[2],
+        //             id: result[3]
+        //         })
+        //     })
+        //     .catch(error => {
                 let randomChoice = Math.floor(Math.random()*2)
 
                 this.setState({
@@ -78,7 +78,7 @@ export default class StoryScreen extends React.Component {
                     author: stories[mins-1][randomChoice].Author,
                     content: stories[mins-1][randomChoice].Content,
                 })
-            });
+            // });
 
     }
 

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { styles } from './styles';
 import AsyncStorage from '@react-native-community/async-storage';
+import {stories} from './storyList';
 
 export default class StoryScreen extends React.Component {
 
@@ -47,11 +48,11 @@ export default class StoryScreen extends React.Component {
             
             let maxWords = (parseInt(this.props.navigation.state.params)+0.5)*readingSpeed
 
-            this.getStory(minWords, maxWords)
+            this.getStory(minWords, maxWords, this.props.navigation.state.params)
         })
     }
 
-    getStory(minWords, maxWords) {
+    getStory(minWords, maxWords, mins) {
 
         var requestOptions = {
           method: 'GET',
@@ -69,7 +70,15 @@ export default class StoryScreen extends React.Component {
                     id: result[3]
                 })
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                let randomChoice = Math.floor(Math.random()*2)
+
+                this.setState({
+                    title: stories[mins-1][randomChoice].Title,
+                    author: stories[mins-1][randomChoice].Author,
+                    content: stories[mins-1][randomChoice].Content,
+                })
+            });
 
     }
 
@@ -95,6 +104,7 @@ export default class StoryScreen extends React.Component {
         }
 
         fetch(`https://storytimeapi.emcauliffe.ca/stories/react?id_code=${this.state.id}&like=${reactionValue}`, requestOptions)
+        .catch(error => console.log(error))
     }
 
 
@@ -118,10 +128,13 @@ export default class StoryScreen extends React.Component {
                             >
                                 <Text style={{fontSize:40}}>👍</Text>
                             </TouchableOpacity>
-                            <Button
-                                title="Done"
-                                onPress={() => this.props.navigation.navigate("Home")}    
-                            />
+                            <View style={{justifyContent:"center"}}>
+                                <Button
+                                    title="Done"
+                                    onPress={() => this.props.navigation.navigate("Home")}    
+                                />
+                            </View>
+                            
                             <TouchableOpacity 
                                 onPress={() => {
                                     this.likeOrDislike("dislike")
